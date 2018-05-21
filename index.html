@@ -1,0 +1,87 @@
+<head>
+    <title>lte pwa</title>
+    <meta name="viewport" content="width=device-width, user-scalable=no" />
+    <link rel="manifest" href="manifest.json" />
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <link rel="icon" href="256x256.png" type="image/png" />
+</head>
+
+<body>
+    <img src="pwa-fonts.png">
+    <div class="main-text">
+        lte pwa!
+    </div>
+    <div class="network-message">
+        Network:
+        <span id="network-status" class="">Good</span>
+    </div>
+    <script type="text/javascript">
+        window.addEventListener('load', () => {
+            if (!('serviceWorker' in navigator)) {
+                // Service Worker isn't supported on this browser, disable or hide UI.
+                return;
+            }
+
+            if (!('PushManager' in window)) {
+                // Push isn't supported on this browser, disable or hide UI.
+                return;
+            }
+
+            function registerServiceWorker() {
+                return navigator.serviceWorker.register('service-worker.js')
+                .then(registration => {
+                    console.log('Service worker successfully registered.');
+                    return registration;
+                })
+                .catch(err => {
+                    console.error('Unable to register service worker.', err);
+                });
+            }
+
+            function execute() {
+                registerServiceWorker().then(registration => {
+                    registration.showNotification('Hello World!');
+                });
+            }
+
+            let promiseChain = new Promise((resolve, reject) => {
+                const permissionPromise = Notification.requestPermission(result => {
+                    resolve(result);
+                });
+
+                if (permissionPromise) {
+                    permissionPromise.then(resolve);
+                }
+            })
+            .then(result => {
+                if (result === 'granted') {
+                    execute();
+                }
+                else {
+                    console.log('no permission');
+                }
+            });
+
+        })
+        // if (navigator.serviceWorker != null) {
+        //     navigator.serviceWorker.register('service-worker.js')
+        //         .then(function(registration) {
+        //             console.log('Registered events at scope: ', registration.scope);
+        //         })
+        //         .catch(function(err) {
+        //             console.log('ServiceWorker registration failed: ', err);
+        //         })
+        //         .then(registration => {
+        //             registration.showNotification('Hello World!');
+        //         })
+        // }
+        //
+        // fetch('./data.json')
+
+        // var statusEl = document.querySelector('#network-status')
+        // if (!navigator.onLine) {
+        //     statusEl.classList = ['is-offline']
+        //     statusEl.innerText = 'Offline'
+        // }
+    </script>
+</body>
